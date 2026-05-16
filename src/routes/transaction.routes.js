@@ -5,7 +5,7 @@ const transactionController = require("../controllers/transaction.controller")
 const router = express.Router();
 
 
-/* POST /api/transaction */
+/* POST /api/transactions*/
 router.post("/", authMiddleware.authMiddleware, transactionController.createTransaction)
 
 

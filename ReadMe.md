@@ -1,6 +1,6 @@
 # BankingSystem
 
-A banking ledger API built with Node.js, Express, and MongoDB. Covers real-world financial system patterns that most tutorials skip — double-entry bookkeeping, idempotent payments, atomic transactions, and an immutable audit trail.
+A banking ledger API built with Node.js, Express, and MongoDB. Covers real-world financial system patterns like double-entry bookkeeping, idempotent payments, atomic transactions, and an immutable audit trail.
 
 > **On the name "Nakul":** It's a placeholder alias used throughout the project. Just an old habit of not putting real names online — didn't feel like changing it after the fact.
 
@@ -15,7 +15,7 @@ A banking ledger API built with Node.js, Express, and MongoDB. Covers real-world
 - Token blacklisting on logout
 
 ### Double-Entry Ledger System
-- Balances are never stored directly — they're always derived from ledger entries using a MongoDB aggregation pipeline
+- Balances are never stored directly, they are always derived from ledger entries using a MongoDB aggregation pipeline
 - Every transaction creates exactly one `DEBIT` entry and one `CREDIT` entry
 - Mirrors how real-world banks track money
 
@@ -145,20 +145,21 @@ npm start
 ### Accounts
 | Method | Route | Description |
 |---|---|---|
-| POST | `/api/account/create` | Create a new bank account |
-| GET | `/api/account/balance/:id` | Get current balance (computed from ledger) |
+| POST | `/api/accounts/` | Create a new bank account of the logged in user |
+| GET | `/api/accounts/` | Get all of the accounts of the logged in user |
+| GET | `/api/accounts/balance/:accountId` | Get current balance (computed from ledger) |
 
 ### Transactions
 | Method | Route | Description |
 |---|---|---|
-| POST | `/api/transaction/transfer` | Transfer funds between accounts |
-| POST | `/api/transaction/fund` | Add initial funds via system account |
+| POST | `/api/transactions` | Transfer funds between accounts |
+| POST | `/api/transactions/system/initial-funds` | Add initial funds via system account |
 
 ---
 
 ## How Balance Calculation Works
 
-Balances are never stored as a field. They're computed on demand from ledger entries using a MongoDB aggregation pipeline:
+Balances are never stored as a field. They are computed on demand from ledger entries using a MongoDB aggregation pipeline:
 
 ```
 Balance = Sum of all CREDIT entries - Sum of all DEBIT entries
@@ -172,7 +173,7 @@ This keeps the balance consistent with the actual transaction history at all tim
 
 ```
 1. Validate request fields
-2. Check idempotency key — return early if already processed
+2. Check idempotency key - return early if already processed
 3. Verify both accounts exist and are ACTIVE
 4. Derive sender balance from ledger aggregation
 5. Check sufficient balance
@@ -189,19 +190,14 @@ This keeps the balance consistent with the actual transaction history at all tim
 
 ## Known Areas for Improvement
 
-- `createTransaction` is ~150 lines — balance check, ledger writes, and status update should be extracted into service functions
-- No centralized error handler middleware
-- No input validation (Joi or Zod would fit well here)
-- No rate limiting
-- No structured logging (Winston or Pino)
-- No test suite
-- No API documentation (Swagger/OpenAPI)
+- Refactor `createTransaction` — too large, needs service layer extraction
+- Add tests
 
 ---
 
 ## Email Notifications
 
-The system sends real emails through Gmail OAuth2. Screenshots of the welcome and transaction emails are included in the repo.
+The system sends real emails through Gmail OAuth2. Screenshots of the welcome and transaction emails are included below.
 
 ![alt text](Welcome.png)
 
@@ -212,4 +208,4 @@ The system sends real emails through Gmail OAuth2. Screenshots of the welcome an
 
 ## License
 
-ISC
+MIT
